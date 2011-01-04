@@ -29,8 +29,8 @@
 static Autotalent *instance;
 
 
-static
-void mixBuffers(float* outBuf, float* buf1, float* buf2, int bufSize) {
+static void
+mixBuffers(float* outBuf, float* buf1, float* buf2, int bufSize) {
   int i;
   for (i = 0; i < bufSize; i++) {
     // formula for mixing from: http://www.vttoth.com/digimix.htm
@@ -39,8 +39,8 @@ void mixBuffers(float* outBuf, float* buf1, float* buf2, int bufSize) {
 }
 
 
-static
-float * getFloatBuffer(JNIEnv* env, jshortArray shortArray, jsize arraySize) {
+static float *
+getFloatBuffer(JNIEnv* env, jshortArray shortArray, jsize arraySize) {
   int i;
   short* shortBuffer = (short *)(*env)->GetPrimitiveArrayCritical(env, shortArray, 0);
   float* floatBuffer = calloc(arraySize, sizeof(float));
@@ -55,8 +55,8 @@ float * getFloatBuffer(JNIEnv* env, jshortArray shortArray, jsize arraySize) {
 }
 
 
-static
-jshort * getShortBuffer(float* floatBuffer, jsize size) {
+static jshort *
+getShortBuffer(float* floatBuffer, jsize size) {
   int i;
   jshort* shortBuffer = calloc(size, sizeof(jshort));
 

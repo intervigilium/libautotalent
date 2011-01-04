@@ -1,0 +1,10 @@
+This project is licensed under GPLv2, for further licensing information see
+the LICENSE file.
+
+Build Instructions:
+For help building the native Autotalent library, please consult the INSTALL file.
+
+Known Issues:
+
+This project uses Autotalent from http://web.mit.edu/tbaran/www/autotalent.html
+by Tom Baran

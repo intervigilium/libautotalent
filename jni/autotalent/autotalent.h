@@ -19,6 +19,7 @@
  */
 /*****************************************************************************/
 
+#include "fft.h"
 
 #define AT_A 0
 #define AT_Bb 1
@@ -203,13 +204,6 @@
 #define KEY_X_Gb 1
 #define KEY_X_G 1
 #define KEY_X_Ab 1
-
-
-typedef struct {
-  int nfft;        // size of FFT
-  int numfreqs;    // number of frequencies represented (nfft/2 + 1)
-  float* fft_data; // array for writing/reading to/from FFT function
-} fft_vars;
 
 
 typedef struct {

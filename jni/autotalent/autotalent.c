@@ -25,7 +25,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/*****************************************************************************/
 #include "autotalent.h"
 #include <stdlib.h>
 #include <string.h>
@@ -36,13 +35,10 @@
 #define PI (float)3.14159265358979323846
 #define L2SC (float)3.32192809488736218171
 
-/*****************************************************************************/
 
-  /********************
-   *  THE CONSTRUCTOR *
-   ********************/
-
-Autotalent * instantiateAutotalent(unsigned long SampleRate) {
+Autotalent *
+instantiateAutotalent(unsigned long SampleRate)
+{
   unsigned long ti;
 
   Autotalent* membvars = malloc(sizeof(Autotalent));
@@ -179,13 +175,11 @@ Autotalent * instantiateAutotalent(unsigned long SampleRate) {
 }
 
 
-  /********************
-   *   THE SETTERS    *
-   ********************/
-
 // Set autotalent key
-void setAutotalentKey(Autotalent * autotalent, char * keyPtr) {
-  int* key;
+void
+setAutotalentKey(Autotalent *autotalent, char *keyPtr)
+{
+  int *key;
   key = calloc(12, sizeof(int));
 
   switch (*keyPtr) {
@@ -380,19 +374,16 @@ void setAutotalentKey(Autotalent * autotalent, char * keyPtr) {
 
 
 // Set input and output buffers
-void setAutotalentBuffers(Autotalent * autotalent, float * inputBuffer, float * outputBuffer) {
+void
+setAutotalentBuffers(Autotalent *autotalent, float *inputBuffer, float *outputBuffer) {
   autotalent->m_pfInputBuffer1 = inputBuffer;
   autotalent->m_pfOutputBuffer1 = outputBuffer;
-  //__android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "input buffer at address: %d, output buffer at address: %d", inputBuffer, outputBuffer);
 }
 
 
-  /********************
-   *  THE PROCESSOR   *
-   ********************/
-
 // Called every time we get a new chunk of audio
-void runAutotalent(Autotalent * Instance, unsigned long SampleCount) {
+void
+runAutotalent(Autotalent *Instance, unsigned long SampleCount) {
   float* pfInput;
   float* pfOutput;
 
@@ -998,11 +989,8 @@ void runAutotalent(Autotalent * Instance, unsigned long SampleCount) {
 }
 
 
-/********************
- *  THE DESTRUCTOR! *
- ********************/
-
-void cleanupAutotalent(Autotalent* Instance) {
+void
+cleanupAutotalent(Autotalent *Instance) {
   int ti;
   fft_des(Instance->fmembvars);
   free(Instance->cbi);
@@ -1022,7 +1010,7 @@ void cleanupAutotalent(Autotalent* Instance) {
   free(Instance->frc);
   free(Instance->fsmooth);
   free(Instance->fsig);
-  for (ti=0; ti<Instance->ford; ti++) {
+  for (ti = 0; ti < Instance->ford; ti++) {
     free(Instance->fbuff[ti]);
   }
   free(Instance->fbuff);

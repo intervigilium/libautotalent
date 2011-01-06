@@ -41,7 +41,7 @@ instantiateAutotalent(unsigned long SampleRate)
 {
   unsigned long ti;
 
-  Autotalent* membvars = malloc(sizeof(Autotalent));
+  Autotalent *membvars = malloc(sizeof(Autotalent));
 
   membvars->aref = 440;
   
@@ -87,7 +87,7 @@ instantiateAutotalent(unsigned long SampleRate)
   membvars->fhp = 0;
   membvars->flp = 0;
   membvars->flpa = pow(0.001, (float) 10/(SampleRate));
-  membvars->fbuff = (float**) malloc((membvars->ford) * sizeof(float*));
+  membvars->fbuff = (float **) malloc((membvars->ford) * sizeof(float *));
 
   for (ti = 0; ti < membvars->ford; ti++) {
     membvars->fbuff[ti] = calloc(membvars->cbsize, sizeof(float));
@@ -384,8 +384,8 @@ setAutotalentBuffers(Autotalent *autotalent, float *inputBuffer, float *outputBu
 // Called every time we get a new chunk of audio
 void
 runAutotalent(Autotalent *Instance, unsigned long SampleCount) {
-  float* pfInput;
-  float* pfOutput;
+  float *pfInput;
+  float *pfOutput;
 
   float fAmount;
   float fSmooth;
@@ -406,7 +406,7 @@ runAutotalent(Autotalent *Instance, unsigned long SampleCount) {
   int iFcorr;
   float fFwarp;
   float fMix;
-  Autotalent* psAutotalent;
+  Autotalent *psAutotalent;
   unsigned long lSampleIndex;
 
   long int N;

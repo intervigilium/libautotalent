@@ -49,36 +49,36 @@ downMix(float *out, float *pcm_left, float *pcm_right, int len) {
 
 
 static float *
-getFloatBuffer(JNIEnv* env, jshortArray shortArray, jsize arraySize) {
+getFloatBuffer(JNIEnv *env, jshortArray buf, jsize len) {
   int i;
-  short* shortBuffer = (short *)(*env)->GetPrimitiveArrayCritical(env, shortArray, 0);
-  float* floatBuffer = calloc(arraySize, sizeof(float));
+  short *shortbuf = (short *)(*env)->GetPrimitiveArrayCritical(env, buf, 0);
+  float *floatbuf = calloc(len, sizeof(float));
 
-  for (i = 0; i < arraySize; i++) {
-    floatBuffer[i] = ((float)(shortBuffer[i])/32768.0f);
+  for (i = 0; i < len; i++) {
+    floatbuf[i] = ((float)(shortbuf[i])/32768.0f);
   }
 
-  (*env)->ReleasePrimitiveArrayCritical(env, shortArray, shortBuffer, 0);
+  (*env)->ReleasePrimitiveArrayCritical(env, buf, shortbuf, 0);
 
-  return floatBuffer;
+  return floatbuf;
 }
 
 
 static jshort *
-getShortBuffer(float* floatBuffer, jsize size) {
+getShortBuffer(float *buf, jsize size) {
   int i;
-  jshort* shortBuffer = calloc(size, sizeof(jshort));
+  jshort *out = calloc(size, sizeof(jshort));
 
   for (i = 0; i < size; i++) {
-    shortBuffer[i] = (short)(floatBuffer[i]*32767.0f);
+    out[i] = (short)(buf[i]*32767.0f);
   }
 
-  return shortBuffer;
+  return out;
 }
 
 
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_instantiateAutoTalent
-  (JNIEnv* env, jclass class, jint sampleRate) {
+  (JNIEnv *env, jclass class, jint sampleRate) {
   if (instance == NULL) {
     instance = instantiateAutotalent(sampleRate);
     __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "instantiated autotalent at %d with sample rate: %d", sampleRate);
@@ -87,7 +87,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_instantiateAut
 
 
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_initializeAutoTalent
-  (JNIEnv* env, jclass class, jfloat concertA, jchar key, jfloat fixedPitch, jfloat fixedPull,
+  (JNIEnv *env, jclass class, jfloat concertA, jchar key, jfloat fixedPitch, jfloat fixedPull,
    jfloat correctStrength, jfloat correctSmooth, jfloat pitchShift, jint scaleRotate,
    jfloat lfoDepth, jfloat lfoRate, jfloat lfoShape, jfloat lfoSym, jint lfoQuant,
    jint formCorr, jfloat formWarp, jfloat mix) {
@@ -122,17 +122,17 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_initializeAuto
 
 
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processSamples
-  (JNIEnv* env , jclass class, jshortArray samples, jint sampleSize) {
+  (JNIEnv *env , jclass class, jshortArray samples, jint sampleSize) {
   if (instance != NULL) {
     // copy buffers
-    float* sampleBuffer = getFloatBuffer(env, samples, sampleSize);
+    float *sampleBuffer = getFloatBuffer(env, samples, sampleSize);
     setAutotalentBuffers(instance, sampleBuffer, sampleBuffer);
 
     // process samples
     runAutotalent(instance, sampleSize);
 
     // copy results back up to java array
-    short* shortBuffer = getShortBuffer(sampleBuffer, sampleSize);
+    short *shortBuffer = getShortBuffer(sampleBuffer, sampleSize);
     (*env)->SetShortArrayRegion(env, samples, 0, sampleSize, shortBuffer);
 
     free(shortBuffer);
@@ -144,11 +144,11 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processSamples
 
 
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processMixSamples
-  (JNIEnv* env , jclass class, jshortArray samples, jshortArray instrumentalSamples, jint sampleSize) {
+  (JNIEnv *env , jclass class, jshortArray samples, jshortArray instrumentalSamples, jint sampleSize) {
   if (instance != NULL) {
     // copy buffers
-    float* sampleBuffer = getFloatBuffer(env, samples, sampleSize);
-    float* instrumentalBuffer = getFloatBuffer(env, instrumentalSamples, sampleSize);
+    float *sampleBuffer = getFloatBuffer(env, samples, sampleSize);
+    float *instrumentalBuffer = getFloatBuffer(env, instrumentalSamples, sampleSize);
     setAutotalentBuffers(instance, sampleBuffer, sampleBuffer);
 
     // process samples
@@ -158,7 +158,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processMixSamp
     mixBuffers(sampleBuffer, sampleBuffer, instrumentalBuffer, sampleSize);
 
     // copy results back up to java array
-    short* shortBuffer = getShortBuffer(sampleBuffer, sampleSize);
+    short *shortBuffer = getShortBuffer(sampleBuffer, sampleSize);
     (*env)->SetShortArrayRegion(env, samples, 0, sampleSize, shortBuffer);
 
     free(shortBuffer);
@@ -171,7 +171,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processMixSamp
 
 
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_destroyAutoTalent
-  (JNIEnv* env, jclass class) {
+  (JNIEnv *env, jclass class) {
   if (instance != NULL) {
     cleanupAutotalent(instance);
     __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "cleaned up autotalent at %d", instance);

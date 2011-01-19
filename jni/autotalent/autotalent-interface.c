@@ -39,6 +39,15 @@ mixBuffers(float* outBuf, float* buf1, float* buf2, int bufSize) {
 }
 
 
+static void
+downMix(float *out, float *pcm_left, float *pcm_right, int len) {
+  int i;
+  for (i = 0; i < len; i++) {
+    out[i] = (pcm_left[i] / 2 + pcm_right[i] / 2);
+  }
+}
+
+
 static float *
 getFloatBuffer(JNIEnv* env, jshortArray shortArray, jsize arraySize) {
   int i;

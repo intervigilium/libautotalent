@@ -77,7 +77,7 @@ getShortBuffer(float *buf, jsize size) {
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_instantiateAutoTalent
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_instantiateAutotalent
   (JNIEnv *env, jclass class, jint sampleRate) {
   if (instance == NULL) {
     instance = instantiateAutotalent(sampleRate);
@@ -86,7 +86,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_instantiateAut
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setConcertA
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setConcertA
   (JNIEnv *env, jclass class, jfloat concertA) {
   if (instance != NULL) {
     *(instance->m_pfTune) = (float) concertA;
@@ -96,7 +96,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setConcertA
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setKey
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setKey
   (JNIEnv *env, jclass class, jchar key) {
   if (instance != NULL) {
     setAutotalentKey(instance, (char *) &key);
@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setKey
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setFixedPitch
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFixedPitch
   (JNIEnv *env, jclass class, jfloat fixed) {
   if (instance != NULL) {
     *(instance->m_pfFixed) = (float) fixed;
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setFixedPitch
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setFixedPull
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFixedPull
   (JNIEnv *env, jclass class, jfloat pull) {
   if (instance != NULL) {
     *(instance->m_pfPull) = (float) pull;
@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setFixedPull
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setCorrectionStrength
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setCorrectionStrength
   (JNIEnv *env, jclass class, jfloat strength) {
   if (instance != NULL) {
     *(instance->m_pfAmount) = (float) strength;
@@ -246,7 +246,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setMix
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processSamples___3SI
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3SI
   (JNIEnv *env , jclass class, jshortArray samples, jint numSamples) {
   if (instance != NULL) {
     // copy buffers
@@ -302,7 +302,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_destroyAutoTalent
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_destroyAutotalent
   (JNIEnv *env, jclass class) {
   if (instance != NULL) {
     cleanupAutotalent(instance);

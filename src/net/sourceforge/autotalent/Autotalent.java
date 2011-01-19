@@ -7,7 +7,7 @@ public class Autotalent {
         System.loadLibrary(AUTOTALENT_LIB);
     }
 
-    public static native void instantiateAutoTalent(int sampleRate);
+    public static native void instantiateAutotalent(int sampleRate);
 
     public static native void setConcertA(float concertA);
 
@@ -45,5 +45,5 @@ public class Autotalent {
 
     public static native void processSamples(short[] samples, short[] mixLeft, short[] mixRight, int numSamples);
 
-    public static native void destroyAutoTalent();
+    public static native void destroyAutotalent();
 }

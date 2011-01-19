@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
- * Method:    instantiateAutoTalent
+ * Method:    instantiateAutotalent
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_instantiateAutoTalent
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_instantiateAutotalent
   (JNIEnv *, jclass, jint);
 
 /*
@@ -161,10 +161,10 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
 
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
- * Method:    destroyAutoTalent
+ * Method:    destroyAutotalent
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_destroyAutoTalent
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_destroyAutotalent
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus

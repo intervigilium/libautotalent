@@ -272,23 +272,30 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
   (JNIEnv *env , jclass class, jshortArray samples, jshortArray mixLeft, jshortArray mixRight, jint numSamples) {
   if (instance != NULL) {
     // copy buffers
-    float *sampleBuffer = getFloatBuffer(env, samples, numSamples);
-    float *instrumentalBuffer = getFloatBuffer(env, mixLeft, numSamples);
-    setAutotalentBuffers(instance, sampleBuffer, sampleBuffer);
+    float *outbuf = getFloatBuffer(env, samples, numSamples);
+    float *instrumental = getFloatBuffer(env, mixLeft, numSamples);
+    setAutotalentBuffers(instance, outbuf, outbuf);
 
     // process samples
     runAutotalent(instance, numSamples);
 
+    // downmix if necessary
+    if (mixRight != NULL) {
+      float *instrumental_right = getFloatBuffer(env, mixRight, numSamples);
+      downMix(instrumental, instrumental, instrumental_right, numSamples);
+      free(pcm_right);
+    }
+
     // mix instrumental samples with tuned recorded samples
-    mixBuffers(sampleBuffer, sampleBuffer, instrumentalBuffer, numSamples);
+    mixBuffers(outbuf, outbuf, instrumental, numSamples);
 
     // copy results back up to java array
-    short *shortBuffer = getShortBuffer(sampleBuffer, numSamples);
-    (*env)->SetShortArrayRegion(env, samples, 0, numSamples, shortBuffer);
+    short *shortbuf = getShortBuffer(outbuf, numSamples);
+    (*env)->SetShortArrayRegion(env, samples, 0, numSamples, shortbuf);
 
-    free(shortBuffer);
-    free(sampleBuffer);
-    free(instrumentalBuffer);
+    free(shortbuf);
+    free(outbuf);
+    free(instrumental);
   } else {
     __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
   }

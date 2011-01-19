@@ -6,19 +6,44 @@ public class Autotalent {
     static {
         System.loadLibrary(AUTOTALENT_LIB);
     }
-    
+
     public static native void instantiateAutoTalent(int sampleRate);
 
-    public static native void initializeAutoTalent(float concertA, char key,
-            float fixedPitch, float fixedPull, float correctStrength,
-            float correctSmooth, float pitchShift, int scaleRotate,
-            float lfoDepth, float lfoRate, float lfoShape, float lfoSym,
-            int lfoQuant, int formCorr, float formWarp, float mix);
+    public static native void setConcertA(float concertA);
 
-    public static native void processSamples(short[] samples, int sampleSize);
+    public static native void setKey(char key);
 
-    public static native void processMixSamples(short[] samples,
-            short[] instrumentalSamples, int sampleSize);
+    public static native void setFixedPitch(float pitch);
+
+    public static native void setFixedPull(float pull);
+
+    public static native void setCorrectionStrength(float strength);
+
+    public static native void setCorrectionSmoothness(float smooth);
+
+    public static native void setPitchShift(float shift);
+
+    public static native void setScaleRotate(int rotate);
+
+    public static native void setLfoDepth(float depth);
+
+    public static native void setLfoRate(float rate);
+
+    public static native void setLfoShape(float shape);
+
+    public static native void setLfoSymmetric(float symmetric);
+
+    public static native void setLfoQuantization(int quantization);
+
+    public static native void setFormantCorrection(int correction);
+
+    public static native void setFormantWarp(float warp);
+
+    public static native void setMix(float mix);
+
+    public static native void processSamples(short[] samples, int numSamples);
+
+    public static native void processSamples(short[] samples, short[] mixLeft, short[] mixRight, int numSamples);
 
     public static native void destroyAutoTalent();
 }

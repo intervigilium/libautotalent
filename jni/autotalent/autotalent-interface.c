@@ -86,54 +86,179 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_instantiateAut
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_initializeAutoTalent
-  (JNIEnv *env, jclass class, jfloat concertA, jchar key, jfloat fixedPitch, jfloat fixedPull,
-   jfloat correctStrength, jfloat correctSmooth, jfloat pitchShift, jint scaleRotate,
-   jfloat lfoDepth, jfloat lfoRate, jfloat lfoShape, jfloat lfoSym, jint lfoQuant,
-   jint formCorr, jfloat formWarp, jfloat mix) {
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setConcertA
+  (JNIEnv *env, jclass class, jfloat concertA) {
   if (instance != NULL) {
-    setAutotalentKey(instance, (char *)&key);
-
-    // set concert A
-    *(instance->m_pfTune) = (float)concertA;
-    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "Concert A: %f", *(instance->m_pfTune));
-
-    // set pitch correction parameters
-    *(instance->m_pfFixed) = (float)fixedPitch;
-    *(instance->m_pfPull) = (float)fixedPull;
-    *(instance->m_pfAmount) = (float)correctStrength;
-    *(instance->m_pfSmooth) = (float)correctSmooth;
-    *(instance->m_pfShift) = (float)pitchShift;
-    *(instance->m_pfScwarp) = (int)scaleRotate;
-
-    // set LFO parameters
-    *(instance->m_pfLfoamp) = (float)lfoDepth;
-    *(instance->m_pfLforate) = (float)lfoRate;
-    *(instance->m_pfLfoshape) = (float)lfoShape;
-    *(instance->m_pfLfosymm) = (float)lfoSym;
-    *(instance->m_pfLfoquant) = (int)lfoQuant;
-    *(instance->m_pfFcorr) = (int)formCorr;
-    *(instance->m_pfFwarp) = (float)formWarp;
-    *(instance->m_pfMix) = (float)mix;
+    *(instance->m_pfTune) = (float) concertA;
   } else {
     __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
   }
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processSamples
-  (JNIEnv *env , jclass class, jshortArray samples, jint sampleSize) {
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setKey
+  (JNIEnv *env, jclass class, jchar key) {
+  if (instance != NULL) {
+    setAutotalentKey(instance, (char *) &key);
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setFixedPitch
+  (JNIEnv *env, jclass class, jfloat fixed) {
+  if (instance != NULL) {
+    *(instance->m_pfFixed) = (float) fixed;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setFixedPull
+  (JNIEnv *env, jclass class, jfloat pull) {
+  if (instance != NULL) {
+    *(instance->m_pfPull) = (float) pull;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_setCorrectionStrength
+  (JNIEnv *env, jclass class, jfloat strength) {
+  if (instance != NULL) {
+    *(instance->m_pfAmount) = (float) strength;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setCorrectionSmoothness
+  (JNIEnv *env, jclass class, jfloat smooth) {
+  if (instance != NULL) {
+    *(instance->m_pfSmooth) = (float) smooth;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setPitchShift
+  (JNIEnv *env, jclass class, jfloat shift) {
+  if (instance != NULL) {
+    *(instance->m_pfShift) = (float) shift;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setScaleRotate
+  (JNIEnv *env, jclass class, jint rotate) {
+  if (instance != NULL) {
+    *(instance->m_pfScwarp) = (int) rotate;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoDepth
+  (JNIEnv *env, jclass class, jfloat depth) {
+  if (instance != NULL) {
+    *(instance->m_pfLfoamp) = (float) depth;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoRate
+  (JNIEnv *env, jclass class, jfloat rate) {
+  if (instance != NULL) {
+    *(instance->m_pfLforate) = (float) rate;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoShape
+  (JNIEnv *env, jclass class, jfloat shape) {
+  if (instance != NULL) {
+    *(instance->m_pfLfoshape) = (float) shape;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoSymmetric
+  (JNIEnv *env, jclass class, jfloat symmetric) {
+  if (instance != NULL) {
+    *(instance->m_pfLfosymm) = (float) symmetric;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoQuantization
+  (JNIEnv *env, jclass class, jint quantization) {
+  if (instance != NULL) {
+    *(instance->m_pfLfoquant) = (int) quantization;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFormantCorrection
+  (JNIEnv *env, jclass class, jint correction) {
+  if (instance != NULL) {
+    *(instance->m_pfFcorr) = (int) correction;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFormantWarp
+  (JNIEnv *env, jclass class, jfloat warp) {
+  if (instance != NULL) {
+    *(instance->m_pfFwarp) = (float) warp;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setMix
+  (JNIEnv *env, jclass class, jfloat mix) {
+  if (instance != NULL) {
+    *(instance->m_pfMix) = (float) mix;
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
+  }
+}
+
+
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processSamples___3SI
+  (JNIEnv *env , jclass class, jshortArray samples, jint numSamples) {
   if (instance != NULL) {
     // copy buffers
-    float *sampleBuffer = getFloatBuffer(env, samples, sampleSize);
+    float *sampleBuffer = getFloatBuffer(env, samples, numSamples);
     setAutotalentBuffers(instance, sampleBuffer, sampleBuffer);
 
     // process samples
-    runAutotalent(instance, sampleSize);
+    runAutotalent(instance, numSamples);
 
     // copy results back up to java array
-    short *shortBuffer = getShortBuffer(sampleBuffer, sampleSize);
-    (*env)->SetShortArrayRegion(env, samples, 0, sampleSize, shortBuffer);
+    short *shortBuffer = getShortBuffer(sampleBuffer, numSamples);
+    (*env)->SetShortArrayRegion(env, samples, 0, numSamples, shortBuffer);
 
     free(shortBuffer);
     free(sampleBuffer);
@@ -143,23 +268,23 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processSamples
 }
 
 
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_AutoTalent_processMixSamples
-  (JNIEnv *env , jclass class, jshortArray samples, jshortArray instrumentalSamples, jint sampleSize) {
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SI
+  (JNIEnv *env , jclass class, jshortArray samples, jshortArray mixLeft, jshortArray mixRight, jint numSamples) {
   if (instance != NULL) {
     // copy buffers
-    float *sampleBuffer = getFloatBuffer(env, samples, sampleSize);
-    float *instrumentalBuffer = getFloatBuffer(env, instrumentalSamples, sampleSize);
+    float *sampleBuffer = getFloatBuffer(env, samples, numSamples);
+    float *instrumentalBuffer = getFloatBuffer(env, mixLeft, numSamples);
     setAutotalentBuffers(instance, sampleBuffer, sampleBuffer);
 
     // process samples
-    runAutotalent(instance, sampleSize);
+    runAutotalent(instance, numSamples);
 
     // mix instrumental samples with tuned recorded samples
-    mixBuffers(sampleBuffer, sampleBuffer, instrumentalBuffer, sampleSize);
+    mixBuffers(sampleBuffer, sampleBuffer, instrumentalBuffer, numSamples);
 
     // copy results back up to java array
-    short *shortBuffer = getShortBuffer(sampleBuffer, sampleSize);
-    (*env)->SetShortArrayRegion(env, samples, 0, sampleSize, shortBuffer);
+    short *shortBuffer = getShortBuffer(sampleBuffer, numSamples);
+    (*env)->SetShortArrayRegion(env, samples, 0, numSamples, shortBuffer);
 
     free(shortBuffer);
     free(sampleBuffer);

@@ -17,27 +17,147 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_instantiateAut
 
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
- * Method:    initializeAutoTalent
- * Signature: (FCFFFFFIFFFFIIFF)V
+ * Method:    setConcertA
+ * Signature: (F)V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_initializeAutoTalent
-  (JNIEnv *, jclass, jfloat, jchar, jfloat, jfloat, jfloat, jfloat, jfloat, jint, jfloat, jfloat, jfloat, jfloat, jint, jint, jfloat, jfloat);
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setConcertA
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setKey
+ * Signature: (C)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setKey
+  (JNIEnv *, jclass, jchar);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setFixedPitch
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFixedPitch
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setFixedPull
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFixedPull
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setCorrectionStrength
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setCorrectionStrength
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setCorrectionSmoothness
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setCorrectionSmoothness
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setPitchShift
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setPitchShift
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setScaleRotate
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setScaleRotate
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setLfoDepth
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoDepth
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setLfoRate
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoRate
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setLfoShape
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoShape
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setLfoSymmetric
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoSymmetric
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setLfoQuantization
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setLfoQuantization
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setFormantCorrection
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFormantCorrection
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setFormantWarp
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setFormantWarp
+  (JNIEnv *, jclass, jfloat);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    setMix
+ * Signature: (F)V
+ */
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_setMix
+  (JNIEnv *, jclass, jfloat);
 
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
  * Method:    processSamples
  * Signature: ([SI)V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3SI
   (JNIEnv *, jclass, jshortArray, jint);
 
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
- * Method:    processMixSamples
- * Signature: ([S[SI)V
+ * Method:    processSamples
+ * Signature: ([S[S[SI)V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processMixSamples
-  (JNIEnv *, jclass, jshortArray, jshortArray, jint);
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SI
+  (JNIEnv *, jclass, jshortArray, jshortArray, jshortArray, jint);
 
 /*
  * Class:     net_sourceforge_autotalent_Autotalent

@@ -283,7 +283,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
     if (mixRight != NULL) {
       float *instrumental_right = getFloatBuffer(env, mixRight, numSamples);
       downMix(instrumental, instrumental, instrumental_right, numSamples);
-      free(pcm_right);
+      free(instrumental_right);
     }
 
     // mix instrumental samples with tuned recorded samples

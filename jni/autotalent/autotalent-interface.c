@@ -30,11 +30,11 @@ static Autotalent *instance;
 
 
 static void
-mixBuffers(float* outBuf, float* buf1, float* buf2, int bufSize) {
+mixBuffers(float *out, float *buf1, float *buf2, int len) {
   int i;
-  for (i = 0; i < bufSize; i++) {
+  for (i = 0; i < len; i++) {
     // formula for mixing from: http://www.vttoth.com/digimix.htm
-    outBuf[i] = (buf1[i] + buf2[i]) - (buf1[i] * buf2[i]);
+    out[i] = (buf1[i] + buf2[i]) - (buf1[i] * buf2[i]);
   }
 }
 

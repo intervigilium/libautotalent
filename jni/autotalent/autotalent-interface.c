@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <android/log.h>
+#include <cpu-features.h>
 
 
 static Autotalent *instance;
@@ -74,6 +75,13 @@ getShortBuffer(float *buf, jsize size) {
   }
 
   return out;
+}
+
+
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_autotalent_Autotalent_getLiveCorrectionEnabled
+  (JNIEnv *env, jclass class) {
+  // jboolean is 8 bits so be careful of truncation!
+  return ((android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_ARMv7) == ANDROID_CPU_ARM_FEATURE_ARMv7);
 }
 
 

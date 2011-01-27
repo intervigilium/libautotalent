@@ -7,6 +7,8 @@ public class Autotalent {
         System.loadLibrary(AUTOTALENT_LIB);
     }
 
+    public static native boolean getLiveCorrectionEnabled();
+
     public static native void instantiateAutotalent(int sampleRate);
 
     public static native void setConcertA(float concertA);

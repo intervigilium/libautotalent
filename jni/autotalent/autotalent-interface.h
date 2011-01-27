@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
+ * Method:    getLiveCorrectionEnabled
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_net_sourceforge_autotalent_Autotalent_getLiveCorrectionEnabled
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     net_sourceforge_autotalent_Autotalent
  * Method:    instantiateAutotalent
  * Signature: (I)V
  */

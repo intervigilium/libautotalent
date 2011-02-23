@@ -20,6 +20,7 @@
 /*****************************************************************************/
 #include "autotalent-interface.h"
 #include "autotalent.h"
+#include "resample.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -275,13 +276,13 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
   }
 }
 
-
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SI
-  (JNIEnv *env , jclass class, jshortArray samples, jshortArray mixLeft, jshortArray mixRight, jint numSamples) {
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SII
+  (JNIEnv *env, jclass class, jshortArray samples, jshortArray mixLeft, jshortArray mixRight, jint mixRate, jint numSamples) {
   if (instance != NULL) {
     // copy buffers
     float *outbuf = getFloatBuffer(env, samples, numSamples);
     float *instrumental = getFloatBuffer(env, mixLeft, numSamples);
+    short *resampled = (short *) malloc(sizeof(short) * numSamples);
     setAutotalentBuffers(instance, outbuf, outbuf);
 
     // process samples
@@ -294,8 +295,11 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
       free(instrumental_right);
     }
 
+    // resample mono instrumental to recorded sample rate
+    resample(instrumental, NULL, mixRate, resampled, NULL, instance->fs, numSamples, 1);
+
     // mix instrumental samples with tuned recorded samples
-    mixBuffers(outbuf, outbuf, instrumental, numSamples);
+    mixBuffers(outbuf, outbuf, resampled, numSamples);
 
     // copy results back up to java array
     short *shortbuf = getShortBuffer(outbuf, numSamples);
@@ -304,6 +308,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
     free(shortbuf);
     free(outbuf);
     free(instrumental);
+    free(resampled);
   } else {
     __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
   }

@@ -282,7 +282,7 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
     // copy buffers
     float *outbuf = getFloatBuffer(env, samples, numSamples);
     float *instrumental = getFloatBuffer(env, mixLeft, numSamples);
-    short *resampled = (short *) malloc(sizeof(short) * numSamples);
+    short *resampled = calloc(numSamples, sizeof(short));
     setAutotalentBuffers(instance, outbuf, outbuf);
 
     // process samples

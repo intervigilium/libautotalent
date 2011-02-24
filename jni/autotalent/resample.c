@@ -263,19 +263,16 @@ static int readDataBuffers(
     short *outPtr1,
     short *outPtr2,
     int dataArraySize,
+    unsigned int *framecount,
     int nChans,
     int Xoff)
 {
     int i, Nsamps, nret;
-    static unsigned int framecount; /* frames previously read */
-
-    // somehow set framecount to 0 here
 
     Nsamps = dataArraySize - Xoff;
     outPtr1 += Xoff;
     outPtr2 += Xoff;
 
-    // memcpy here
     if (nChans == 1) {
         memcpy(outPtr1, inputL, sizeof(short) * (Nsamps - 1));
     } else {
@@ -283,10 +280,10 @@ static int readDataBuffers(
         memcpy(outPtr2, inputR, sizeof(short) * (Nsamps - 1));
     }
 
-    framecount += Nsamps;
+    *framecount += Nsamps;
 
-    if (framecount >= (unsigned) inCount) {
-        return (((Nsamps - (framecount - inCount)) - 1) + Xoff);
+    if (*framecount >= (unsigned) inCount) {
+        return (((Nsamps - (*framecount - inCount)) - 1) + Xoff);
     } else {
         return 0;
     }
@@ -311,7 +308,9 @@ int resample(
     short Y1[OBUFFSIZE], Y2[OBUFFSIZE];
     unsigned short Nout, Nx;
     int i, Ycount, last;
+    unsigned int framecount;
 
+    framecount = 0;
     Xoff = 10;
     Nx = IBUFFSIZE - 2*Xoff;
     last = 0;
@@ -326,7 +325,7 @@ int resample(
     do {
         if (!last) {
             last = readDataBuffers(inputL, inputR, numSamples, X1, X2, IBUFFSIZE,
-                                   nChans, (int)Xread);
+                                   &framecount, nChans, (int)Xread);
             if (last && (last-Xoff<Nx)) {
                 Nx = last-Xoff;
                 if (Nx <= 0) {

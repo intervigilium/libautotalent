@@ -302,7 +302,7 @@ int resample(
 {
     unsigned int Time, Time2;
     unsigned short Xp, Ncreep, Xoff, Xread;
-    double factor = outputRate/inputRate;
+    double factor = outputRate/(double)inputRate;
     int OBUFFSIZE = (int)(((double)IBUFFSIZE)*factor+2.0);
     short X1[IBUFFSIZE], X2[IBUFFSIZE];
     short Y1[OBUFFSIZE], Y2[OBUFFSIZE];

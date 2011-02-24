@@ -88,7 +88,7 @@ static int readDataBuffers(
     int nChans,
     int Xoff)
 {
-    int i, Nsamps, nret;
+    int Nsamps;
 
     Nsamps = dataArraySize - Xoff;
     outPtr1 += Xoff;

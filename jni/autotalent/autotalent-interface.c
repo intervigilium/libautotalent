@@ -50,15 +50,30 @@ downMix(float *out, float *pcm_left, float *pcm_right, int len) {
 }
 
 
+static inline void
+floatToShort(float *in, short *out, int len) {
+  int i;
+  for (i = 0; i < len; i++) {
+    out[i] = (short)(in[i]*32767.0f);
+  }
+}
+
+
+static inline void
+shortToFloat(short *in, float *out, int len) {
+  int i;
+  for (i = 0; i < len; i++) {
+    out[i] = ((float)(in[i])/32768.0f);
+  }
+}
+
+
 static float *
 getFloatBuffer(JNIEnv *env, jshortArray buf, jsize len) {
-  int i;
   short *shortbuf = (short *)(*env)->GetPrimitiveArrayCritical(env, buf, 0);
   float *floatbuf = calloc(len, sizeof(float));
 
-  for (i = 0; i < len; i++) {
-    floatbuf[i] = ((float)(shortbuf[i])/32768.0f);
-  }
+  shortToFloat(shortbuf, floatbuf, len);
 
   (*env)->ReleasePrimitiveArrayCritical(env, buf, shortbuf, 0);
 
@@ -67,13 +82,10 @@ getFloatBuffer(JNIEnv *env, jshortArray buf, jsize len) {
 
 
 static jshort *
-getShortBuffer(float *buf, jsize size) {
-  int i;
-  jshort *out = calloc(size, sizeof(jshort));
+getShortBuffer(float *buf, jsize len) {
+  jshort *out = calloc(len, sizeof(jshort));
 
-  for (i = 0; i < size; i++) {
-    out[i] = (short)(buf[i]*32767.0f);
-  }
+  floatToShort(buf, out, len);
 
   return out;
 }

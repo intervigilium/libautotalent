@@ -303,7 +303,7 @@ int resample(
     int numSamples,
     int nChans)
 {
-    short Time, Time2;
+    unsigned int Time, Time2;
     unsigned short Xp, Ncreep, Xoff, Xread;
     double factor = outputRate/inputRate;
     int OBUFFSIZE = (int)(((double)IBUFFSIZE)*factor+2.0);
@@ -336,9 +336,9 @@ int resample(
         }
 
         Time2 = Time;
-        Nout = SrcLinear(X1,Y1,factor,(unsigned int *)&Time,Nx);
+        Nout = SrcLinear(X1,Y1,factor,&Time,Nx);
         if (nChans==2) {
-            Nout = SrcLinear(X2,Y2,factor,(unsigned int *)&Time2,Nx);
+            Nout = SrcLinear(X2,Y2,factor,&Time2,Nx);
         }
 
         Time -= (Nx<<Np);

@@ -309,8 +309,10 @@ int resample(
     unsigned short Nout, Nx;
     int i, Ycount, last;
     unsigned int framecount;
+    unsigned int outIdx;
 
     framecount = 0;
+    outIdx = 0;
     Xoff = 10;
     Nx = IBUFFSIZE - 2*Xoff;
     last = 0;
@@ -369,17 +371,18 @@ int resample(
         }
 
         if (nChans==1) {
-            for (i=0; i<Nout; i++) {
+            // these need to map to the complete output buffers
+            for (i=outIdx; i<Nout+outIdx; i++) {
                 outputL[i] = Y1[i];
             }
         } else {
-            for (i=0; i<Nout; i++) {
+            for (i=outIdx; i<Nout+outIdx; i++) {
                 outputL[i] = Y1[i];
                 outputR[i] = Y2[i];
             }
         }
 
-    } while (Ycount < numSamples);
+    } while (Ycount<numSamples);
 
     return(Ycount);
 }

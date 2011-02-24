@@ -321,8 +321,8 @@ int resample(
     Xread = Xoff;
     Time = (Xoff<<Np);
 
-    for (i=0; i<Xoff; X1[i++]=0);
-    for (i=0; i<Xoff; X2[i++]=0);
+    memset(X1, 0, sizeof(short)*Xoff);
+    memset(X2, 0, sizeof(short)*Xoff);
 
     do {
         if (!last) {
@@ -371,7 +371,6 @@ int resample(
         }
 
         if (nChans==1) {
-            // these need to map to the complete output buffers
             for (i=outIdx; i<Nout+outIdx; i++) {
                 outputL[i] = Y1[i];
             }

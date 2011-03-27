@@ -27,182 +27,202 @@
 #include <string.h>
 #include "resample.h"
 
-#define IBUFFSIZE 4096                         /* Input buffer size */
-
+#define IBUFFSIZE 4096		/* Input buffer size */
 
 static inline short WordToHword(int v, int scl)
 {
-    short out;
-    int llsb = (1<<(scl-1));
-    v += llsb;          /* round */
-    v >>= scl;
-    if (v>MAX_HWORD) {
-        v = MIN_HWORD;
-    }
-    out = (short) v;
-    return out;
+	short out;
+	int llsb = (1 << (scl - 1));
+	v += llsb;		/* round */
+	v >>= scl;
+	if (v > MAX_HWORD) {
+		v = MIN_HWORD;
+	}
+	out = (short)v;
+	return out;
 }
-
 
 /* Sampling rate conversion using linear interpolation for maximum speed. */
 static int SrcLinear(short X[], short Y[], double factor, unsigned int *Time,
-                     unsigned short Nx)
+		     unsigned short Nx)
 {
-    short iconst;
-    short *Xp, *Ystart;
-    int v,x1,x2;
-    
-    double dt;                  /* Step through input signal */ 
-    unsigned int dtb;                  /* Fixed-point version of Dt */
-    unsigned int endTime;              /* When Time reaches EndTime, return to user */
-    
-    dt = 1.0/factor;            /* Output sampling period */
-    dtb = dt*(1<<Np) + 0.5;     /* Fixed-point representation */
-    
-    Ystart = Y;
-    endTime = *Time + (1<<Np)*(int)Nx;
-    while (*Time < endTime)
-    {
-        iconst = (*Time) & Pmask;
-        Xp = &X[(*Time)>>Np];      /* Ptr to current input sample */
-        x1 = *Xp++;
-        x2 = *Xp;
-        x1 *= ((1<<Np)-iconst);
-        x2 *= iconst;
-        v = x1 + x2;
-        *Y++ = WordToHword(v,Np);   /* Deposit output */
-        *Time += dtb;               /* Move to next sample by time increment */
-    }
-    return (Y - Ystart);            /* Return number of output samples */
+	short iconst;
+	short *Xp, *Ystart;
+	int v, x1, x2;
+
+	unsigned int dt;	/* Step through input signal */
+	unsigned int endTime;
+
+	factor = 1.0 / factor;
+	dt = factor * (32768) + 0.5;	/* Output sampling period */
+
+	Ystart = Y;
+	endTime = *Time + (32768) * (int)Nx;
+	while (*Time < endTime) {
+		iconst = (*Time) & FP_MASK;	/* mask off lower 16 bits of time */
+		Xp = &X[(*Time) >> FP_FACTOR];	/* Ptr to current input sample is top 16 bits */
+		x1 = *Xp++;
+		x2 = *Xp;
+		x1 *= 32768 - iconst;
+		x2 *= iconst;
+		v = x1 + x2;
+		*Y++ = WordToHword(v, FP_FACTOR);	/* Deposit output */
+		*Time += dt;	/* Move to next sample by time increment */
+	}
+	return (Y - Ystart);	/* Return number of output samples */
 }
 
-
-static int readDataBuffers(
-    short *inputL,
-    short *inputR,
-    int inCount,
-    short *outPtr1,
-    short *outPtr2,
-    int dataArraySize,
-    unsigned int *framecount,
-    int nChans,
-    int Xoff)
+struct rs_data *resample_init(int in_rate, int out_rate)
 {
-    int Nsamps;
+	struct rs_data *rs;
 
-    Nsamps = dataArraySize - Xoff;
-    outPtr1 += Xoff;
-    outPtr2 += Xoff;
+	rs = (struct rs_data *)calloc(sizeof(struct rs_data), 1);
+	if (!rs) {
+		return NULL;
+	}
+	if (out_rate <= 0 || in_rate <= 0) {
+		return NULL;
+	}
 
-    if (nChans == 1) {
-        memcpy(outPtr1, inputL, sizeof(short) * (Nsamps - 1));
-    } else {
-        memcpy(outPtr1, inputL, sizeof(short) * (Nsamps - 1));
-        memcpy(outPtr2, inputR, sizeof(short) * (Nsamps - 1));
-    }
+	rs->factor = out_rate / (double)in_rate;
+	rs->in_buf_offset = 10;
+	rs->in_buf_ptr = rs->in_buf_offset;
+	rs->in_buf_read = rs->in_buf_offset;
+	rs->time = (rs->in_buf_offset << FP_FACTOR);
 
-    *framecount += Nsamps;
+	rs->in_buf_size = IBUFFSIZE;
+	rs->out_buf_size =
+	    (int)(((double)(rs->in_buf_size)) * rs->factor + 2.0);
 
-    if (*framecount >= (unsigned) inCount) {
-        return (((Nsamps - (*framecount - inCount)) - 1) + Xoff);
-    } else {
-        return 0;
-    }
+	rs->in_buf =
+	    (short *)calloc(sizeof(short), rs->in_buf_size + rs->in_buf_offset);
+	rs->out_buf = (short *)calloc(sizeof(short), rs->out_buf_size);
+	if (!rs->in_buf || !rs->out_buf) {
+		resample_close(rs);
+		return NULL;
+	}
+	memset(rs->in_buf, 0, sizeof(short) * rs->in_buf_offset);
+	return rs;
 }
 
-
-int resample(
-    short *inputL,
-    short *inputR,
-    int inputRate,
-    short *outputL,
-    short *outputR,
-    int outputRate,
-    int numSamples,
-    int nChans)
+int
+resample(struct rs_data *rs, short *in_buf, int in_buf_size, short *out_buf,
+	 int out_buf_size, int last)
 {
-    unsigned int Time, Time2;
-    unsigned short Xp, Ncreep, Xoff, Xread;
-    double factor = outputRate/(double)inputRate;
-    int OBUFFSIZE = (int)(((double)IBUFFSIZE)*factor+2.0);
-    short X1[IBUFFSIZE], X2[IBUFFSIZE];
-    short Y1[OBUFFSIZE], Y2[OBUFFSIZE];
-    unsigned short Nout, Nx;
-    int i, Ycount, last;
-    unsigned int framecount;
-    unsigned int outIdx;
+	int i, len;
+	int num_in;		/* number of samples from previous buffer */
+	int num_out;		/* number of samples resampled by SrcLinear */
+	int num_reuse;		/* number of samples to re-use in next buffer */
+	int num_creep;		/* number of samples of time accumulation */
+	int out_total_samples;
 
-    framecount = 0;
-    outIdx = 0;
-    Xoff = 10;
-    Nx = IBUFFSIZE - 2*Xoff;
-    last = 0;
-    Ycount = 0;
-    Xp = Xoff;
-    Xread = Xoff;
-    Time = (Xoff<<Np);
+	if (!rs) {
+		return -1;
+	}
 
-    memset(X1, 0, sizeof(short)*Xoff);
-    memset(X2, 0, sizeof(short)*Xoff);
+	rs->in_buf_used = 0;
+	out_total_samples = 0;
 
-    do {
-        if (!last) {
-            last = readDataBuffers(inputL, inputR, numSamples, X1, X2, IBUFFSIZE,
-                                   &framecount, nChans, (int)Xread);
-            if (last && (last-Xoff<Nx)) {
-                Nx = last-Xoff;
-                if (Nx <= 0) {
-                    break;
-                }
-            }
-        }
+	if (rs->out_buf_ptr) {
+		len = MIN(out_buf_size, rs->out_buf_ptr);
+		/* copy leftover samples to the output */
+		for (i = 0; i < len; i++) {
+			out_buf[out_total_samples + i] = rs->out_buf[i];
+		}
+		out_total_samples += len;
+		/* shift remaining samples in output buffer to beginning */
+		for (i = 0; i < rs->out_buf_ptr - len; i++) {
+			rs->out_buf[i] = rs->out_buf[len + i];
+		}
+		rs->out_buf_ptr -= len;
 
-        Time2 = Time;
-        Nout = SrcLinear(X1,Y1,factor,&Time,Nx);
-        if (nChans==2) {
-            Nout = SrcLinear(X2,Y2,factor,&Time2,Nx);
-        }
+		return out_total_samples;
+	}
 
-        Time -= (Nx<<Np);
-        Xp += Nx;
-        Ncreep = (Time>>Np) - Xoff;
-        if (Ncreep) {
-            Time -= (Ncreep<<Np);
-            Xp += Ncreep;
-        }
-        for (i=0; i<IBUFFSIZE-Xp+Xoff; i++) {
-            X1[i] = X1[i+Xp-Xoff];
-            if (nChans==2) {
-                X2[i] = X2[i+Xp-Xoff];
-            }
-        }
-        if (last) {
-            last -= Xp;
-            if (!last) {
-                last++;
-            }
-        }
-        Xread = i;
-        Xp = Xoff;
+	for (;;) {
+		/* grab input samples from buffer */
+		len = rs->in_buf_size - rs->in_buf_read;
+		if (len >= in_buf_size - rs->in_buf_used) {
+			len = in_buf_size - rs->in_buf_used;
+		}
+		for (i = 0; i < len; i++) {
+			rs->in_buf[rs->in_buf_read + i] =
+			    in_buf[rs->in_buf_used + i];
+		}
+		rs->in_buf_used += len;
+		rs->in_buf_read += len;
 
-        Ycount += Nout;
-        if (Ycount>numSamples) {
-            Nout -= (Ycount-numSamples);
-            Ycount = numSamples;
-        }
+		if (last && (rs->in_buf_used == in_buf_size)) {
+			/* pad buffer with zero if no more data */
+			num_in = rs->in_buf_read - rs->in_buf_offset;
+			for (i = 0; i < rs->in_buf_offset; i++) {
+				rs->in_buf[rs->in_buf_read + i] = 0;
+			}
+		} else {
+			num_in = rs->in_buf_read - 2 * rs->in_buf_offset;
+		}
 
-        if (nChans==1) {
-            for (i=outIdx; i<Nout+outIdx; i++) {
-                outputL[i] = Y1[i];
-            }
-        } else {
-            for (i=outIdx; i<Nout+outIdx; i++) {
-                outputL[i] = Y1[i];
-                outputR[i] = Y2[i];
-            }
-        }
+		if (num_in <= 0) {
+			break;
+		}
 
-    } while (Ycount<numSamples);
+		/* do linear interpolation */
+		num_out =
+		    SrcLinear(rs->in_buf, rs->out_buf, rs->factor,
+			      &rs->time, num_in);
 
-    return(Ycount);
+		/* move time back num_in samples back */
+		rs->time -= (num_in << FP_FACTOR);
+		rs->in_buf_ptr += num_in;
+
+		/* remove time accumulation */
+		num_creep = (rs->time >> FP_FACTOR) - rs->in_buf_offset;
+		if (num_creep) {
+			rs->time -= (num_creep << FP_FACTOR);
+			rs->in_buf_ptr += num_creep;
+		}
+
+		/* copy input signal that needs to be reused */
+		num_reuse =
+		    rs->in_buf_read - (rs->in_buf_ptr - rs->in_buf_offset);
+		for (i = 0; i < num_reuse; i++) {
+			rs->in_buf[i] =
+			    rs->in_buf[(rs->in_buf_ptr - rs->in_buf_offset) +
+				       i];
+		}
+		rs->in_buf_read = num_reuse;
+		rs->in_buf_ptr = rs->in_buf_offset;
+
+		/* copy samples to output buffer */
+		rs->out_buf_ptr = num_out;
+		if (rs->out_buf_ptr && (out_buf_size - out_total_samples > 0)) {
+			len =
+			    MIN(out_buf_size - out_total_samples,
+				rs->out_buf_ptr);
+			for (i = 0; i < len; i++) {
+				out_buf[out_total_samples + i] = rs->out_buf[i];
+			}
+			out_total_samples += len;
+			/* store uncopied output buffer */
+			for (i = 0; i < rs->out_buf_ptr - len; i++) {
+				rs->out_buf[i] = rs->out_buf[len + i];
+			}
+			rs->out_buf_ptr -= len;
+		}
+		if (rs->out_buf_ptr) {
+			break;
+		}
+	}
+
+	return out_total_samples;
+}
+
+void resample_close(struct rs_data *rs)
+{
+	if (rs) {
+		free(rs->in_buf);
+		free(rs->out_buf);
+		free(rs);
+		rs = NULL;
+	}
 }

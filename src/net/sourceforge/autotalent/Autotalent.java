@@ -45,7 +45,7 @@ public class Autotalent {
 
     public static native void processSamples(short[] samples, int numSamples);
 
-    public static native void processSamples(short[] samples, short[] mixLeft, short[] mixRight, int mixRate, int numSamples);
+    public static native void processSamples(short[] samples, short[] instrumental, int numSamples);
 
     public static native void destroyAutotalent();
 }

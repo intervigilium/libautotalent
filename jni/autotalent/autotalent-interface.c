@@ -20,7 +20,6 @@
 /*****************************************************************************/
 #include "autotalent-interface.h"
 #include "autotalent.h"
-#include "resample.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -289,44 +288,33 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
 }
 
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SII
-  (JNIEnv *env, jclass class, jshortArray samples, jshortArray mixLeft, jshortArray mixRight, jint mixRate, jint numSamples) {
+  (JNIEnv *env, jclass class, jshortArray samples, jshortArray instrumental, jint numSamples) {
   if (instance != NULL) {
-    float *outbuf, *instrumentalbuf;
-    short *shortbuf, *resamplebuf, *instrumental;
+    float *f_outbuf, *f_instrumentalbuf;
+    short *outbuf, *instrumentalbuf;
 
-    outbuf = getFloatBuffer(env, samples, numSamples);
-    setAutotalentBuffers(instance, outbuf, outbuf);
+    f_outbuf = getFloatBuffer(env, samples, numSamples);
+    setAutotalentBuffers(instance, f_outbuf, f_outbuf);
 
     // process samples
     runAutotalent(instance, numSamples);
 
     // get instrumental track
-    instrumental = (short *)(*env)->GetPrimitiveArrayCritical(env, mixLeft, 0);
-    if (mixRight != NULL) {
-      // downmix if necessary
-      short *instrumental_right = (short *)(*env)->GetPrimitiveArrayCritical(env, mixRight, 0);
-      downMix(instrumental, instrumental, instrumental_right, numSamples);
-      (*env)->ReleasePrimitiveArrayCritical(env, mixRight, instrumental_right, 0);
-    }
-
-    // resample mono instrumental to recorded sample rate
-    resamplebuf = calloc(numSamples, sizeof(short));
-    resample(instrumental, NULL, mixRate, resamplebuf, NULL, instance->fs, numSamples, 1);
-    (*env)->ReleasePrimitiveArrayCritical(env, mixLeft, instrumental, 0);
+    instrumentalbuf = (short *)(*env)->GetPrimitiveArrayCritical(env, instrumental, 0);
 
     // mix instrumental samples with tuned recorded samples
-    instrumentalbuf = calloc(numSamples, sizeof(float));
-    shortToFloat(resamplebuf, instrumentalbuf, numSamples);
-    mixBuffers(outbuf, outbuf, instrumentalbuf, numSamples);
+    f_instrumentalbuf = calloc(numSamples, sizeof(float));
+    shortToFloat(instrumentalbuf, f_instrumentalbuf, numSamples);
+    mixBuffers(f_outbuf, f_outbuf, f_instrumentalbuf, numSamples);
+    (*env)->ReleasePrimitiveArrayCritical(env, instrumental, instrumentalbuf, 0);
 
     // copy results back up to java array
-    shortbuf = getShortBuffer(outbuf, numSamples);
-    (*env)->SetShortArrayRegion(env, samples, 0, numSamples, shortbuf);
+    outbuf = getShortBuffer(f_outbuf, numSamples);
+    (*env)->SetShortArrayRegion(env, samples, 0, numSamples, outbuf);
 
-    free(resamplebuf);
     free(instrumentalbuf);
-    free(shortbuf);
     free(outbuf);
+    free(f_outbuf);
   } else {
     __android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so", "No suitable autotalent instance found!");
   }

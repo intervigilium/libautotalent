@@ -162,10 +162,10 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
 /*
  * Class:     net_sourceforge_autotalent_Autotalent
  * Method:    processSamples
- * Signature: ([S[S[SII)V
+ * Signature: ([S[SI)V
  */
-JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SII
-  (JNIEnv *, jclass, jshortArray, jshortArray, jshortArray, jint, jint);
+JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3SI
+  (JNIEnv *, jclass, jshortArray, jshortArray, jint);
 
 /*
  * Class:     net_sourceforge_autotalent_Autotalent

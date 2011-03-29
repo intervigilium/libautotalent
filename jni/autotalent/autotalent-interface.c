@@ -291,14 +291,17 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
 JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SII
   (JNIEnv *env, jclass class, jshortArray samples, jshortArray mixLeft, jshortArray mixRight, jint mixRate, jint numSamples) {
   if (instance != NULL) {
-    float *outbuf = getFloatBuffer(env, samples, numSamples);
+    float *outbuf, *instrumentalbuf;
+    short *shortbuf, *resamplebuf, *instrumental;
+
+    outbuf = getFloatBuffer(env, samples, numSamples);
     setAutotalentBuffers(instance, outbuf, outbuf);
 
     // process samples
     runAutotalent(instance, numSamples);
 
     // get instrumental track
-    short *instrumental = (short *)(*env)->GetPrimitiveArrayCritical(env, mixLeft, 0);
+    instrumental = (short *)(*env)->GetPrimitiveArrayCritical(env, mixLeft, 0);
     if (mixRight != NULL) {
       // downmix if necessary
       short *instrumental_right = (short *)(*env)->GetPrimitiveArrayCritical(env, mixRight, 0);
@@ -307,17 +310,17 @@ JNIEXPORT void JNICALL Java_net_sourceforge_autotalent_Autotalent_processSamples
     }
 
     // resample mono instrumental to recorded sample rate
-    short *resamplebuf = calloc(numSamples, sizeof(short));
+    resamplebuf = calloc(numSamples, sizeof(short));
     resample(instrumental, NULL, mixRate, resamplebuf, NULL, instance->fs, numSamples, 1);
     (*env)->ReleasePrimitiveArrayCritical(env, mixLeft, instrumental, 0);
 
     // mix instrumental samples with tuned recorded samples
-    float *instrumentalbuf = calloc(numSamples, sizeof(float));
+    instrumentalbuf = calloc(numSamples, sizeof(float));
     shortToFloat(resamplebuf, instrumentalbuf, numSamples);
     mixBuffers(outbuf, outbuf, instrumentalbuf, numSamples);
 
     // copy results back up to java array
-    short *shortbuf = getShortBuffer(outbuf, numSamples);
+    shortbuf = getShortBuffer(outbuf, numSamples);
     (*env)->SetShortArrayRegion(env, samples, 0, numSamples, shortbuf);
 
     free(resamplebuf);

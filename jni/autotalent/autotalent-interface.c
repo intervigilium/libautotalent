@@ -316,7 +316,7 @@ JNIEXPORT void JNICALL
 }
 
 JNIEXPORT void JNICALL
-    Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3S_3SII
+    Java_net_sourceforge_autotalent_Autotalent_processSamples___3S_3SI
     (JNIEnv * env, jclass class, jshortArray samples, jshortArray instrumental,
      jint numSamples) {
 	if (instance != NULL) {

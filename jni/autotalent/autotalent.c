@@ -386,8 +386,8 @@ void setAutotalentKey(Autotalent * autotalent, char *keyPtr)
 
 // Set input and output buffers
 void
-setAutotalentBuffers(Autotalent * autotalent, float *inputBuffer,
-		     float *outputBuffer)
+setAutotalentBuffers(Autotalent * autotalent, short *inputBuffer,
+		     short *outputBuffer)
 {
 	autotalent->m_pfInputBuffer1 = inputBuffer;
 	autotalent->m_pfOutputBuffer1 = outputBuffer;
@@ -396,8 +396,8 @@ setAutotalentBuffers(Autotalent * autotalent, float *inputBuffer,
 // Called every time we get a new chunk of audio
 void runAutotalent(Autotalent * Instance, unsigned long SampleCount)
 {
-	float *pfInput;
-	float *pfOutput;
+	short *pfInput;
+	short *pfOutput;
 
 	float fAmount;
 	float fSmooth;
@@ -559,7 +559,7 @@ void runAutotalent(Autotalent * Instance, unsigned long SampleCount)
 	for (lSampleIndex = 0; lSampleIndex < SampleCount; lSampleIndex++) {
 
 		// load data into circular buffer
-		tf = (float)*(pfInput++);
+		tf = *(pfInput++) / (float)FP_FACTOR;
 		ti4 = psAutotalent->cbiwr;
 		psAutotalent->cbi[ti4] = tf;
 
@@ -614,9 +614,8 @@ void runAutotalent(Autotalent * Instance, unsigned long SampleCount)
 			ti2 = psAutotalent->cbiwr;
 			for (ti = 0; ti < N; ti++) {
 				psAutotalent->ffttime[ti] =
-				    (float)(psAutotalent->
-					    cbi[(ti2 - ti +
-						 N) % N] *
+				    (float)(psAutotalent->cbi[(ti2 - ti +
+							       N) % N] *
 					    psAutotalent->cbwindow[ti]);
 			}
 
@@ -930,7 +929,7 @@ void runAutotalent(Autotalent * Instance, unsigned long SampleCount)
 				vald =
 				    vald - (float)0.166666666667 *val0 * (indd -
 									  ind1)
-				    * (indd - ind2) * (indd - ind3);
+				* (indd - ind2) * (indd - ind3);
 				vald =
 				    vald + (float)0.5 *val1 * (indd -
 							       ind0) * (indd -
@@ -944,7 +943,7 @@ void runAutotalent(Autotalent * Instance, unsigned long SampleCount)
 				vald =
 				    vald + (float)0.166666666667 *val3 * (indd -
 									  ind0)
-				    * (indd - ind1) * (indd - ind2);
+				* (indd - ind1) * (indd - ind2);
 				psAutotalent->cbo[(ti + ti2 + N) % N] =
 				    psAutotalent->cbo[(ti + ti2 + N) % N] +
 				    vald * tf;
@@ -1049,7 +1048,8 @@ void runAutotalent(Autotalent * Instance, unsigned long SampleCount)
 		// Write audio to output of plugin
 		// Mix (blend between original (delayed) =0 and processed =1)
 		*(pfOutput++) =
-		    (fMix * tf) + (1 - fMix) * psAutotalent->cbi[ti4];
+		    (short)(((1 - fMix) * psAutotalent->cbi[ti4] +
+			     fMix * tf) * FP_FACTOR);
 	}
 }
 

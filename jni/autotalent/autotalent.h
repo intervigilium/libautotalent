@@ -204,6 +204,9 @@
 #define KEY_X_G 1
 #define KEY_X_Ab 1
 
+#define FP_DIGITS 15
+#define FP_FACTOR (1 << FP_DIGITS)
+
 typedef struct {
 	float *m_pfTune;
 	float *m_pfFixed;
@@ -222,8 +225,8 @@ typedef struct {
 	float *m_pfFwarp;
 	float *m_pfMix;
 
-	float *m_pfInputBuffer1;
-	float *m_pfOutputBuffer1;
+	short *m_pfInputBuffer1;
+	short *m_pfOutputBuffer1;
 
 	fft_vars *fmembvars;	// member variables for fft routine
 
@@ -300,8 +303,8 @@ Autotalent *instantiateAutotalent(unsigned long sampleRate);
 void setAutotalentKey(Autotalent * autotalent, char *keyPtr);
 
 void
-setAutotalentBuffers(Autotalent * autotalent, float *inputBuffer,
-		     float *outputBuffer);
+setAutotalentBuffers(Autotalent * autotalent, short *inputBuffer,
+		     short *outputBuffer);
 
 void runAutotalent(Autotalent * instance, unsigned long sampleCount);
 

@@ -333,20 +333,20 @@ JNIEXPORT void JNICALL
 		instrumentalbuf =
 		    (short *)(*env)->GetPrimitiveArrayCritical(env,
 							       instrumental, 0);
-
-		// mix instrumental samples with tuned recorded samples
 		f_instrumentalbuf = calloc(numSamples, sizeof(float));
 		shortToFloat(instrumentalbuf, f_instrumentalbuf, numSamples);
-		mixBuffers(f_outbuf, f_outbuf, f_instrumentalbuf, numSamples);
 		(*env)->ReleasePrimitiveArrayCritical(env, instrumental,
 						      instrumentalbuf, 0);
+
+		// mix instrumental samples with tuned recorded samples
+		mixBuffers(f_outbuf, f_outbuf, f_instrumentalbuf, numSamples);
 
 		// copy results back up to java array
 		outbuf = getShortBuffer(f_outbuf, numSamples);
 		(*env)->SetShortArrayRegion(env, samples, 0, numSamples,
 					    outbuf);
 
-		free(instrumentalbuf);
+		free(f_instrumentalbuf);
 		free(outbuf);
 		free(f_outbuf);
 	} else {

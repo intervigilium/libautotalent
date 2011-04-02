@@ -37,14 +37,6 @@ static void mixBuffers(float *out, float *buf1, float *buf2, int len)
 	}
 }
 
-static void downMix(short *out, short *pcm_left, short *pcm_right, int len)
-{
-	int i;
-	for (i = 0; i < len; i++) {
-		out[i] = (pcm_left[i] / 2 + pcm_right[i] / 2);
-	}
-}
-
 static inline void floatToShort(float *in, short *out, int len)
 {
 	int i;

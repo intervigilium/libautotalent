@@ -65,7 +65,7 @@ Java_net_sourceforge_autotalent_Autotalent_instantiateAutotalent(JNIEnv *
 	if (instance == NULL) {
 		instance = instantiateAutotalent(sampleRate);
 		__android_log_print(ANDROID_LOG_DEBUG, "libautotalent.so",
-				    "instantiated autotalent at %d with sample rate: %d",
+				    "instantiated autotalent with sample rate: %d",
 				    sampleRate);
 	}
 }
